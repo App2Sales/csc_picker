@@ -3,6 +3,7 @@ library csc_picker;
 import 'dart:io';
 
 import 'package:csc_picker/dropdown_with_search.dart';
+import 'package:csc_picker/utils.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -669,18 +670,6 @@ class CSCPickerState extends State<CSCPicker> {
   }
 
   ///Read JSON country data from assets
-  Future<void> loadTranslations() async {
-    var res = await rootBundle
-        .loadString('packages/csc_picker/lib/assets/translations.json');
-
-    final list = jsonDecode(res) as List<dynamic>;
-    final listMap = list.map((e) => e as Map<String, dynamic>).toList();
-
-    _translations = listMap.map((e) {
-      return <String, String>{for (var x in e.entries) x.key: x.value as String};
-    }).toList();
-  }
-
   Future<List<Map<String, dynamic>>> getResponse() async {
     if (_countries == null) {
       var res = await rootBundle
@@ -696,7 +685,7 @@ class CSCPickerState extends State<CSCPicker> {
   ///get countries from json response
   Future<List<String?>> getCountries() async {
     _country.clear();
-    await loadTranslations();
+    _translations =  await CSCPickerUtils.getCountriesTranslations();
     var countries = await getResponse();
     if (_countryFilter.isNotEmpty) {
       _countryFilter.forEach((element) {
