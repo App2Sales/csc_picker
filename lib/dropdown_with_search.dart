@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class DropdownWithSearch<T> extends StatelessWidget {
   final String title;
   final String placeHolder;
+  final TextStyle? placeHolderStyle;
   final T selected;
   final List items;
   final EdgeInsets? selectedItemPadding;
@@ -14,6 +15,10 @@ class DropdownWithSearch<T> extends StatelessWidget {
   final double? dialogRadius;
   final bool disabled;
   final String label;
+  final Color searchFocusedBorderColor;
+  final Color searchEnabledBorderColor;
+  final Color? searchIconColor;
+  final TextSelectionThemeData? searchSelectionThemeData;
 
   final Function onChanged;
 
@@ -21,6 +26,7 @@ class DropdownWithSearch<T> extends StatelessWidget {
       {Key? key,
       required this.title,
       required this.placeHolder,
+      this.placeHolderStyle,
       required this.items,
       required this.selected,
       required this.onChanged,
@@ -33,7 +39,11 @@ class DropdownWithSearch<T> extends StatelessWidget {
       this.searchBarRadius,
       this.dialogRadius,
       required this.label,
-      this.disabled = false})
+      this.disabled = false,
+      this.searchFocusedBorderColor = Colors.black26,
+      this.searchEnabledBorderColor = Colors.black12,
+      this.searchIconColor,
+      this.searchSelectionThemeData})
       : super(key: key);
 
   @override
@@ -46,11 +56,16 @@ class DropdownWithSearch<T> extends StatelessWidget {
               context: context,
               builder: (context) => SearchDialog(
                   placeHolder: placeHolder,
+                  placeHolderStyle: placeHolderStyle,
                   title: title,
                   searchInputRadius: searchBarRadius,
                   dialogRadius: dialogRadius,
                   titleStyle: dropdownHeadingStyle,
                   itemStyle: itemStyle,
+                  focusedBorderColor: searchFocusedBorderColor,
+                  enabledBorderColor: searchEnabledBorderColor,
+                  iconColor: searchIconColor,
+                  selectionThemeData: searchSelectionThemeData,
                   items: items)).then((value) {
             onChanged(value);
             /* if(value!=null)
@@ -103,9 +118,16 @@ class SearchDialog extends StatefulWidget {
   final List items;
   final TextStyle? titleStyle;
   final TextStyle? itemStyle;
+  final TextStyle? placeHolderStyle;
   final double? searchInputRadius;
 
   final double? dialogRadius;
+
+  final Color focusedBorderColor;
+  final Color enabledBorderColor;
+  final Color? iconColor;
+
+  final TextSelectionThemeData? selectionThemeData;
 
   const SearchDialog(
       {Key? key,
@@ -115,7 +137,12 @@ class SearchDialog extends StatefulWidget {
       this.titleStyle,
       this.searchInputRadius,
       this.dialogRadius,
-      this.itemStyle})
+      this.itemStyle,
+      this.placeHolderStyle,
+      this.focusedBorderColor = Colors.black26,
+      this.enabledBorderColor = Colors.black12,
+      this.selectionThemeData,
+      this.iconColor})
       : super(key: key);
 
   @override
@@ -201,33 +228,39 @@ class _SearchDialogState<T> extends State<SearchDialog> {
             SizedBox(height: 5),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 16),
-              child: TextField(
-                autofocus: true,
-                decoration: InputDecoration(
-                  isDense: true,
-                  prefixIcon: Icon(Icons.search),
-                  hintText: widget.placeHolder,
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                        widget.searchInputRadius != null
-                            ? Radius.circular(widget.searchInputRadius!)
-                            : Radius.circular(5)),
-                    borderSide: const BorderSide(
-                      color: Colors.black26,
+              child: Theme(
+                data: ThemeData(
+                  textSelectionTheme: widget.selectionThemeData
+                ),
+                child: TextField(
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    prefixIcon: Icon(Icons.search, color: widget.iconColor),
+                    hintText: widget.placeHolder,
+                    hintStyle: widget.placeHolderStyle,
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                          widget.searchInputRadius != null
+                              ? Radius.circular(widget.searchInputRadius!)
+                              : Radius.circular(5)),
+                      borderSide: BorderSide(
+                        color: widget.focusedBorderColor,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                          widget.searchInputRadius != null
+                              ? Radius.circular(widget.searchInputRadius!)
+                              : Radius.circular(5)),
+                      borderSide: BorderSide(color: widget.enabledBorderColor),
                     ),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                        widget.searchInputRadius != null
-                            ? Radius.circular(widget.searchInputRadius!)
-                            : Radius.circular(5)),
-                    borderSide: const BorderSide(color: Colors.black12),
-                  ),
+                  style: widget.itemStyle != null
+                      ? widget.itemStyle
+                      : TextStyle(fontSize: 14),
+                  controller: textController,
                 ),
-                style: widget.itemStyle != null
-                    ? widget.itemStyle
-                    : TextStyle(fontSize: 14),
-                controller: textController,
               ),
             ),
             SizedBox(height: 5),

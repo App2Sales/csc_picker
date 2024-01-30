@@ -551,6 +551,11 @@ class CSCPicker extends StatefulWidget {
     this.title,
     this.clearButtonContent = const Text("Clear"),
     this.showClearButton = false,
+    this.placeHolderStyle,
+    this.searchFocusedBorderColor = Colors.black26,
+    this.searchEnabledBorderColor = Colors.black12,
+    this.searchIconColor,
+    this.searchSelectionThemeData
   }) : super(key: key);
 
   final ValueChanged<String?>? onCountryChanged;
@@ -590,6 +595,12 @@ class CSCPicker extends StatefulWidget {
   final String cityDropdownLabel;
 
   final List<CscCountry>? countryFilter;
+
+  final TextStyle? placeHolderStyle;
+  final Color searchFocusedBorderColor;
+  final Color searchEnabledBorderColor;
+  final Color? searchIconColor;
+  final TextSelectionThemeData? searchSelectionThemeData;
 
   @override
   CSCPickerState createState() => CSCPickerState();
@@ -961,6 +972,11 @@ class CSCPickerState extends State<CSCPicker> {
       dialogRadius: widget.dropdownDialogRadius,
       searchBarRadius: widget.searchBarRadius,
       label: widget.countrySearchPlaceholder,
+      placeHolderStyle: widget.placeHolderStyle,
+      searchFocusedBorderColor: widget.searchFocusedBorderColor,
+      searchEnabledBorderColor: widget.searchEnabledBorderColor,
+      searchSelectionThemeData: widget.searchSelectionThemeData,
+      searchIconColor: widget.searchIconColor,
       items: _country.map((String? dropDownStringItem) {
         return dropDownStringItem;
       }).toList(),
@@ -996,6 +1012,11 @@ class CSCPickerState extends State<CSCPicker> {
       disabledDecoration: widget.disabledDropdownDecoration,
       selected: _selectedState,
       label: widget.stateSearchPlaceholder,
+      placeHolderStyle: widget.placeHolderStyle,
+      searchFocusedBorderColor: widget.searchFocusedBorderColor,
+      searchEnabledBorderColor: widget.searchEnabledBorderColor,
+      searchSelectionThemeData: widget.searchSelectionThemeData,
+      searchIconColor: widget.searchIconColor,
       //onChanged: (value) => _onSelectedState(value),
       onChanged: (value) {
         //print("stateChanged $value $_selectedState");
@@ -1024,6 +1045,11 @@ class CSCPickerState extends State<CSCPicker> {
       disabledDecoration: widget.disabledDropdownDecoration,
       selected: _selectedCity,
       label: widget.citySearchPlaceholder,
+      placeHolderStyle: widget.placeHolderStyle,
+      searchFocusedBorderColor: widget.searchFocusedBorderColor,
+      searchEnabledBorderColor: widget.searchEnabledBorderColor,
+      searchSelectionThemeData: widget.searchSelectionThemeData,
+      searchIconColor: widget.searchIconColor,
       //onChanged: (value) => _onSelectedCity(value),
       onChanged: (value) {
         //print("cityChanged $value $_selectedCity");
