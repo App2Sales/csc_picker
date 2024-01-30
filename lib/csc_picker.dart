@@ -618,16 +618,22 @@ class CSCPickerState extends State<CSCPicker> {
   String _selectedCity = 'City';
   String? _selectedCountry;
   String _selectedState = 'State';
-  var responses;
+  
+  bool _firstLoad = true;
 
   @override
   void initState() {
     super.initState();
-    // setDefaults();
+
     if (widget.countryFilter != null) {
       _countryFilter = widget.countryFilter!;
     }
-    getCountries().then((value) => setDefaults());
+
+    getCountries().then((value) {
+      _firstLoad = false;
+      setDefaults();
+    });
+
     _selectedCity = widget.cityDropdownLabel;
     _selectedState = widget.stateDropdownLabel;
   }
@@ -712,6 +718,10 @@ class CSCPickerState extends State<CSCPicker> {
     }
 
     var model = Country();
+
+    if (_firstLoad) {
+      data['originalName'] = data['name'];
+    }
 
     if (availableTranslations.keys.any(condition)) {
       model.name = availableTranslations.entries.firstWhere((e) => condition(e.key)).value;
@@ -813,11 +823,13 @@ class CSCPickerState extends State<CSCPicker> {
       _value = _value.substring(6).trim();
     }
 
-    if (_translations.any((e) => e.containsValue(value))) {
-      _value = _countries![_translations.indexWhere((e) => e.containsValue(value))]["name"];
-    }
+    _value = _countries!.firstWhere((c) => c["name"] == _value)["originalName"];
 
-    setState(() {      
+    // if (_translations.any((e) => e.containsValue(value))) {
+    //   _value = _countries![_translations.indexWhere((e) => e.containsValue(value))]["name"];
+    // }
+
+    setState(() {
       this.widget.onCountryChanged!(_value);
 
       if (value != _selectedCountry) {
