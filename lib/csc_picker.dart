@@ -8,6 +8,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'model/select_status_model.dart';
+import 'package:collection/collection.dart';
 
 enum Layout { vertical, horizontal }
 
@@ -641,10 +642,20 @@ class CSCPickerState extends State<CSCPicker> {
 
   Future<void> setDefaults() async {
     if (widget.currentCountry != null) {
-      // _selectedCountry = widget.currentCountry;
-      _selectedCountry = _country[_translations.indexWhere(
+      final indexTranslated = _translations.indexWhere(
         (e) => e.containsValue(widget.currentCountry)
-      )];
+      );
+
+      if (indexTranslated > -1) {
+        _selectedCountry = _country[indexTranslated];
+      } else {
+        final first = _countries!.firstWhereOrNull(
+          (c) =>
+            c["originalName"] == widget.currentCountry ||
+            c["name"] == widget.currentCountry
+        );
+        _selectedCountry = first?["originalName"] ?? first?["name"];
+      }
       
       if (mounted) setState((){});
       await getStates();
