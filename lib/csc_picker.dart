@@ -601,7 +601,7 @@ class CSCPickerState extends State<CSCPicker> {
   List<String?> _states = [];
   List<CscCountry> _countryFilter = [];
 
-  List? _countries;
+  List<Map<String, dynamic>>? _countries;
   late List<Map<String, String>> _translations;
 
   String _selectedCity = 'City';
@@ -612,28 +612,31 @@ class CSCPickerState extends State<CSCPicker> {
   @override
   void initState() {
     super.initState();
-    setDefaults();
+    // setDefaults();
     if (widget.countryFilter != null) {
       _countryFilter = widget.countryFilter!;
     }
-    getCountries();
+    getCountries().then((value) => setDefaults());
     _selectedCity = widget.cityDropdownLabel;
     _selectedState = widget.stateDropdownLabel;
   }
 
   Future<void> setDefaults() async {
     if (widget.currentCountry != null) {
-      setState(() => _selectedCountry = widget.currentCountry);
+      _selectedCountry = widget.currentCountry;
+      if (mounted) setState((){});
       await getStates();
     }
 
     if (widget.currentState != null) {
-      setState(() => _selectedState = widget.currentState!);
+      _selectedState = widget.currentState!;
+      if (mounted) setState((){});
       await getCities();
     }
 
     if (widget.currentCity != null) {
-      setState(() => _selectedCity = widget.currentCity!);
+      _selectedCity = widget.currentCity!;
+      if (mounted) setState((){});
     }
   }
 
@@ -648,28 +651,36 @@ class CSCPickerState extends State<CSCPicker> {
   Future<void> loadTranslations() async {
     var res = await rootBundle
         .loadString('packages/csc_picker/lib/assets/translations.json');
-    _translations = jsonDecode(res);
+
+    final list = jsonDecode(res) as List<dynamic>;
+    final listMap = list.map((e) => e as Map<String, dynamic>).toList();
+
+    _translations = listMap.map((e) {
+      return <String, String>{for (var x in e.entries) x.key: x.value as String};
+    }).toList();
   }
 
-  Future<dynamic> getResponse() async {
+  Future<List<Map<String, dynamic>>> getResponse() async {
     if (_countries == null) {
       var res = await rootBundle
           .loadString('packages/csc_picker/lib/assets/country.json');
-      _countries = jsonDecode(res);
+
+      final list = jsonDecode(res) as List<dynamic>;
+      _countries = list.map((e) => e as Map<String, dynamic>).toList();
     }
 
-    return _countries;
+    return _countries!;
   }
 
   ///get countries from json response
   Future<List<String?>> getCountries() async {
     _country.clear();
     await loadTranslations();
-    var countries = await getResponse() as List;
+    var countries = await getResponse();
     if (_countryFilter.isNotEmpty) {
       _countryFilter.forEach((element) {
         var result = countries[Countries[element]!];
-        if (result != null) addCountryToList(result);
+        addCountryToList(result);
       });
     } else {
       countries.forEach((data) {
@@ -683,7 +694,7 @@ class CSCPickerState extends State<CSCPicker> {
   ///Add a country to country list
   void addCountryToList(data) {
     final currentLocale = Platform.localeName.replaceAll("_", "-");
-    final availableTranslations = _translations[data["id"]];
+    final availableTranslations = _translations[data["id"]-1];
 
     bool condition(String key) {
       return key == currentLocale || currentLocale.contains(key);
@@ -697,8 +708,10 @@ class CSCPickerState extends State<CSCPicker> {
       model.name = data['name'];
     }
 
+    data['name'] = model.name;
+
     model.emoji = data['emoji'];
-    
+
     if (!mounted) return;
     setState(() {
       widget.flagState == CountryFlag.ENABLE ||
@@ -720,7 +733,7 @@ class CSCPickerState extends State<CSCPicker> {
         ? response
             .map((map) => Country.fromJson(map))
             .where(
-                (item) => item.emoji + "    " + item.name == _selectedCountry)
+                (item) => item.emoji! + "    " + item.name! == _selectedCountry)
             .map((item) => item.state)
             .toList()
         : response
@@ -728,7 +741,7 @@ class CSCPickerState extends State<CSCPicker> {
             .where((item) => item.name == _selectedCountry)
             .map((item) => item.state)
             .toList();
-    var states = takeState as List;
+    final List states = takeState;
     states.forEach((f) {
       if (!mounted) return;
       setState(() {
@@ -752,7 +765,7 @@ class CSCPickerState extends State<CSCPicker> {
         ? response
             .map((map) => Country.fromJson(map))
             .where(
-                (item) => item.emoji + "    " + item.name == _selectedCountry)
+                (item) => item.emoji! + "    " + item.name! == _selectedCountry)
             .map((item) => item.state)
             .toList()
         : response
@@ -760,7 +773,7 @@ class CSCPickerState extends State<CSCPicker> {
             .where((item) => item.name == _selectedCountry)
             .map((item) => item.state)
             .toList();
-    var cities = takeCity as List;
+    final List cities = takeCity;
     cities.forEach((f) {
       var name = f.where((item) => item.name == _selectedState);
       var cityName = name.map((item) => item.city).toList();
@@ -795,7 +808,7 @@ class CSCPickerState extends State<CSCPicker> {
 
     setState(() {      
       this.widget.onCountryChanged!(_value);
-      
+
       if (value != _selectedCountry) {
         _states.clear();
         _cities.clear();
