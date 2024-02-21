@@ -532,6 +532,7 @@ class CSCPicker extends StatefulWidget {
     this.dropdownItemStyle,
     this.dropdownDecoration,
     this.disabledDropdownDecoration,
+    this.dropdownInnerPadding = const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
     this.searchBarRadius,
     this.dropdownDialogRadius,
     this.flagState = CountryFlag.ENABLE,
@@ -580,6 +581,7 @@ class CSCPicker extends StatefulWidget {
   ///Parameters to change style of CSC Picker
   final TextStyle? selectedItemStyle, dropdownHeadingStyle, dropdownItemStyle;
   final BoxDecoration? dropdownDecoration, disabledDropdownDecoration;
+  final EdgeInsetsGeometry dropdownInnerPadding;
   final bool showStates, showCities;
   final CountryFlag flagState;
   final Layout layout;
@@ -984,6 +986,7 @@ class CSCPickerState extends State<CSCPicker> {
       itemStyle: widget.dropdownItemStyle,
       decoration: widget.dropdownDecoration,
       disabledDecoration: widget.disabledDropdownDecoration,
+      padding: widget.dropdownInnerPadding,
       disabled: _country.length == 0 || widget.disableCountry ? true : false,
       dialogRadius: widget.dropdownDialogRadius,
       searchBarRadius: widget.searchBarRadius,
@@ -1026,6 +1029,7 @@ class CSCPickerState extends State<CSCPicker> {
       dialogRadius: widget.dropdownDialogRadius,
       searchBarRadius: widget.searchBarRadius,
       disabledDecoration: widget.disabledDropdownDecoration,
+      padding: widget.dropdownInnerPadding,
       selected: _selectedState,
       label: widget.stateSearchPlaceholder,
       placeHolderStyle: widget.placeHolderStyle,
@@ -1059,6 +1063,7 @@ class CSCPickerState extends State<CSCPicker> {
       dialogRadius: widget.dropdownDialogRadius,
       searchBarRadius: widget.searchBarRadius,
       disabledDecoration: widget.disabledDropdownDecoration,
+      padding: widget.dropdownInnerPadding,
       selected: _selectedCity,
       label: widget.citySearchPlaceholder,
       placeHolderStyle: widget.placeHolderStyle,

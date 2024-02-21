@@ -19,6 +19,7 @@ class DropdownWithSearch<T> extends StatelessWidget {
   final Color searchEnabledBorderColor;
   final Color? searchIconColor;
   final TextSelectionThemeData? searchSelectionThemeData;
+  final EdgeInsetsGeometry padding;
 
   final Function onChanged;
 
@@ -43,7 +44,8 @@ class DropdownWithSearch<T> extends StatelessWidget {
       this.searchFocusedBorderColor = Colors.black26,
       this.searchEnabledBorderColor = Colors.black12,
       this.searchIconColor,
-      this.searchSelectionThemeData})
+      this.searchSelectionThemeData,
+      this.padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 8)})
       : super(key: key);
 
   @override
@@ -80,7 +82,7 @@ class DropdownWithSearch<T> extends StatelessWidget {
           });
         },
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: padding,
           decoration: !disabled
               ? decoration != null
                   ? decoration
